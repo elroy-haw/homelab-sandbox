@@ -8,6 +8,7 @@ The following kustomize overlay deploys ArgoCD components and create an Applicat
 
 ```bash
 cd kubernetes
+kubectl create ns argocd
 kustomize build argocd/instances/overlays/cluster-0 | kubectl apply -n argocd -f -
 ```
 

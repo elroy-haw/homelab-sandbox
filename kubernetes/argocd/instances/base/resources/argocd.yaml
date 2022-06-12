@@ -7,11 +7,11 @@ spec:
   project: default
   source:
     repoURL: https://github.com/elroy-haw/homelab-sandbox.git
-    targetRevision: HEAD
     path: kubernetes/argocd/instances/overlays/cluster-0
+    targetRevision: HEAD
   destination:
     namespace: argocd
-    server: in-cluster
+    name: in-cluster
   syncPolicy:
     automated:
       prune: true
