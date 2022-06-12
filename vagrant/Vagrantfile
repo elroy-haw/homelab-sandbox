@@ -1,0 +1,33 @@
+SERVER_IP="192.168.56.4"
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/bionic64"
+  config.vm.synced_folder ".vagrant/k3s", "/vagrant_data/k3s"
+
+  # k3s servers
+  config.vm.define "server" do |server|
+    server.vm.hostname = "k3s-server"
+    server.vm.network "private_network", ip: SERVER_IP
+    server.vm.network "forwarded_port", guest: 6443, host: 6443
+    server.vm.provider "virtualbox" do |vb|
+      vb.name = "k3s-server"
+      vb.cpus = 1
+      vb.memory = 1024
+    end
+    server.vm.provision "shell", path: "scripts/k3s-server.sh", args: SERVER_IP
+  end
+
+  # k3s agents
+  (0..1).each do |i|
+    config.vm.define "agent-#{i}" do |agent|
+      agent.vm.hostname = "k3s-agent-#{i}"
+      agent.vm.network "private_network", ip: "192.168.56.#{i + 5}"
+      agent.vm.provider "virtualbox" do |vb|
+        vb.name = "k3s-agent-#{i}"
+        vb.cpus = 1
+        vb.memory = 1024
+      end
+      agent.vm.provision "shell", path: "scripts/k3s-agent.sh", args: SERVER_IP
+    end
+  end
+end
